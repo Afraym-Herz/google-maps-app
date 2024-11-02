@@ -11,12 +11,14 @@ class CustomGoogleMap extends StatefulWidget {
 class _CustomGoogleMapState extends State<CustomGoogleMap> {
   late CameraPosition initialCameraPosition;
   late GoogleMapController googleMapController;
+  Set<Marker> markers = {};
   @override
   void initState() {
     initialCameraPosition = const CameraPosition(
       zoom: 12,
       target: LatLng(31.187, 29.928),
     );
+    initMarker();
 
     super.initState();
   }
@@ -26,11 +28,21 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
     googleMapController.dispose();
     super.dispose();
   }
+
   Future<String> nightMapStyle() async {
     String nightMapStyle = await DefaultAssetBundle.of(context)
         .loadString("assets/google_map_styles/google_map_night_style.json");
-    return nightMapStyle; 
+    return nightMapStyle;
   }
+
+  void initMarker() {
+    var myMarker = const Marker(
+      markerId: MarkerId("1"),
+      position: LatLng(31.080, 29.7634) ,
+    );
+    markers.add(myMarker);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -39,7 +51,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
           onMapCreated: (controller) {
             googleMapController = controller;
           },
-          style: nightMapStyle().toString() ,
+          style: nightMapStyle().toString(),
           initialCameraPosition: initialCameraPosition,
           cameraTargetBounds: CameraTargetBounds(
             LatLngBounds(
@@ -60,5 +72,4 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
       ],
     );
   }
-
 }
