@@ -43,6 +43,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   void initMarker() async {
     var customMarkerImage = BitmapDescriptor.bytes(
       await getImageFromRawData("assets/images/unnamed.png", 100),
+
     );
     var myMarkers = places
         .map(
@@ -74,6 +75,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
     return Stack(
       children: [
         GoogleMap(
+          zoomControlsEnabled: false ,
           onMapCreated: (controller) {
             googleMapController = controller;
           },
