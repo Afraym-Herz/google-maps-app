@@ -1,5 +1,9 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_map_app/models/place_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'dart:ui' as ui;
 
 class CustomGoogleMap extends StatefulWidget {
   const CustomGoogleMap({super.key});
@@ -12,6 +16,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   late CameraPosition initialCameraPosition;
   late GoogleMapController googleMapController;
   Set<Marker> markers = {};
+
   @override
   void initState() {
     initialCameraPosition = const CameraPosition(
@@ -35,12 +40,33 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
     return nightMapStyle;
   }
 
-  void initMarker() {
-    var myMarker = const Marker(
-      markerId: MarkerId("1"),
-      position: LatLng(31.080, 29.7634) ,
+  void initMarker() async {
+    var customMarkerImage = BitmapDescriptor.bytes(
+      await getImageFromRawData("assets/images/unnamed.png", 100),
     );
-    markers.add(myMarker);
+    var myMarkers = places
+        .map(
+          (place) => Marker(
+            icon: customMarkerImage,
+            position: place.latLng,
+            markerId: MarkerId(
+              place.id.toString(),
+            ),
+          ),
+        ).toSet();
+    markers.addAll(myMarkers);
+  }
+
+  Future<Uint8List> getImageFromRawData(String image, int width) async {
+    var imageData = await rootBundle.load(image);
+    var imageCodec = await ui.instantiateImageCodec(
+      imageData.buffer.asUint8List(),
+      targetWidth: width,
+    );
+    var imageFrame = await imageCodec.getNextFrame();
+    var imageByteData =
+        await imageFrame.image.toByteData(format: ui.ImageByteFormat.png);
+    return imageByteData!.buffer.asUint8List();
   }
 
   @override
