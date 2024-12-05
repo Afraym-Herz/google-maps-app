@@ -16,20 +16,22 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   late CameraPosition initialCameraPosition;
   late GoogleMapController googleMapController;
   Set<Marker> markers = {};
-
+  Set<Polyline> polyLines = {} ;
   @override
-  void initState() {
+  void initState(){
     initialCameraPosition = const CameraPosition(
       zoom: 12,
       target: LatLng(31.187, 29.928),
     );
     initMarker();
 
+    initPloyLines();
+    initPolygon();
     super.initState();
   }
 
   @override
-  void dispose() {
+  void dispose(){
     googleMapController.dispose();
     super.dispose();
   }
@@ -43,7 +45,6 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   void initMarker() async {
     var customMarkerImage = BitmapDescriptor.bytes(
       await getImageFromRawData("assets/images/unnamed.png", 100),
-
     );
     var myMarkers = places
         .map(
@@ -89,7 +90,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
           ),
         ),
         ElevatedButton(
-          onPressed: () {
+          onPressed: (){
             LatLng newLocation = const LatLng(30.6733, 30.19070);
             googleMapController.animateCamera(
               CameraUpdate.newLatLng(newLocation),
@@ -99,5 +100,42 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
         ),
       ],
     );
+  }
+  
+  void initPloyLines() {
+    Polyline polyline = const Polyline(
+    color: Colors.red,
+    zIndex: 1,
+    width: 5,
+        geodesic: true,
+        endCap: Cap.roundCap,
+    polylineId: PolylineId("1"), 
+    points: [
+      LatLng(31.146667, 29.881753),
+      LatLng(31.183682, 29.905957),
+      LatLng(31.178982, 29.942006),
+      LatLng(31.209379, 29.937199),
+    ]
+      ) ;
+
+    Polyline polyline2 = const Polyline(
+    color: Colors.black,
+    zIndex: 2,
+    width: 5,
+    geodesic: true,
+    endCap: Cap.roundCap,
+    polylineId: PolylineId("1"), 
+    points: [
+      LatLng(31.14725, 29.94698),
+      LatLng(31.20482, 29.90509),
+    ]
+      ) ;
+
+    polyLines.add(polyline) ;
+    polyLines.add(polyline2);
+  }
+  
+  void initPolygon() {
+    
   }
 }
