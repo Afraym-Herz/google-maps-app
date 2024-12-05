@@ -17,6 +17,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   late GoogleMapController googleMapController;
   Set<Marker> markers = {};
   Set<Polyline> polyLines = {} ;
+  Set<Circle> circles = {} ;
   @override
   void initState(){
     initialCameraPosition = const CameraPosition(
@@ -27,6 +28,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
 
     initPloyLines();
     initPolygon();
+    initCircle();
     super.initState();
   }
 
@@ -154,5 +156,13 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
         LatLng(31.0,34 ) ,
       ]
     );    
+  }
+  
+  void initCircle() {
+    Circle kosharyAbu = const Circle(
+      radius: 10000,
+      circleId: CircleId("1") ,
+      center: LatLng(30.018987399497977, 31.424207246099208)
+        );
   }
 }
