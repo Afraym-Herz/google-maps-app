@@ -5,6 +5,8 @@ import 'package:google_map_app/models/place_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:ui' as ui;
 
+import 'package:location/location.dart';
+
 class CustomGoogleMap extends StatefulWidget {
   const CustomGoogleMap({super.key});
 
@@ -14,18 +16,20 @@ class CustomGoogleMap extends StatefulWidget {
 
 class _CustomGoogleMapState extends State<CustomGoogleMap> {
   late CameraPosition initialCameraPosition;
-  late GoogleMapController googleMapController;
+  GoogleMapController? googleMapController;
+  late Location location;
   Set<Marker> markers = {};
-  Set<Polyline> polyLines = {} ;
-  Set<Circle> circles = {} ;
+  Set<Polyline> polyLines = {};
+  Set<Circle> circles = {};
   @override
-  void initState(){
+  void initState() {
     initialCameraPosition = const CameraPosition(
       zoom: 12,
       target: LatLng(31.187, 29.928),
     );
+    checkAndRequestLocationServices();
+    checkAndRequestLocationPermission();
     initMarker();
-
     initPloyLines();
     initPolygon();
     initCircle();
@@ -33,8 +37,8 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   }
 
   @override
-  void dispose(){
-    googleMapController.dispose();
+  void dispose() {
+    googleMapController!.dispose();
     super.dispose();
   }
 
@@ -57,7 +61,8 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
               place.id.toString(),
             ),
           ),
-        ).toSet();
+        )
+        .toSet();
     markers.addAll(myMarkers);
   }
 
@@ -78,7 +83,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
     return Stack(
       children: [
         GoogleMap(
-          zoomControlsEnabled: false ,
+          zoomControlsEnabled: false,
           onMapCreated: (controller) {
             googleMapController = controller;
           },
@@ -92,9 +97,9 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
           ),
         ),
         ElevatedButton(
-          onPressed: (){
+          onPressed: () {
             LatLng newLocation = const LatLng(30.6733, 30.19070);
-            googleMapController.animateCamera(
+            googleMapController!.animateCamera(
               CameraUpdate.newLatLng(newLocation),
             );
           },
@@ -103,66 +108,100 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
       ],
     );
   }
-  
+
   void initPloyLines() {
     Polyline polyline = const Polyline(
-    color: Colors.red,
-    zIndex: 1,
-    width: 5,
+        color: Colors.red,
+        zIndex: 1,
+        width: 5,
         geodesic: true,
         endCap: Cap.roundCap,
-    polylineId: PolylineId("1"), 
-    points: [
-      LatLng(31.146667, 29.881753),
-      LatLng(31.183682, 29.905957),
-      LatLng(31.178982, 29.942006),
-      LatLng(31.209379, 29.937199),
-    ]
-      ) ;
+        polylineId: PolylineId("1"),
+        points: [
+          LatLng(31.146667, 29.881753),
+          LatLng(31.183682, 29.905957),
+          LatLng(31.178982, 29.942006),
+          LatLng(31.209379, 29.937199),
+        ]);
 
     Polyline polyline2 = const Polyline(
-    color: Colors.black,
-    zIndex: 2,
-    width: 5,
-    geodesic: true,
-    endCap: Cap.roundCap,
-    polylineId: PolylineId("1"), 
-    points: [
-      LatLng(31.14725, 29.94698),
-      LatLng(31.20482, 29.90509),
-    ]
-      ) ;
+        color: Colors.black,
+        zIndex: 2,
+        width: 5,
+        geodesic: true,
+        endCap: Cap.roundCap,
+        polylineId: PolylineId("1"),
+        points: [
+          LatLng(31.14725, 29.94698),
+          LatLng(31.20482, 29.90509),
+        ]);
 
-    polyLines.add(polyline) ;
+    polyLines.add(polyline);
     polyLines.add(polyline2);
   }
-  
+
   void initPolygon() {
-    Polygon polygon = const Polygon(
-      polygonId: PolygonId('1'),
-      holes: [
-        [
-          LatLng(32.9027,31.4329 ) ,
-          LatLng(28.7532,26.9504 ) ,
-          LatLng(29.6738,34.2454 ) ,
-          
-        ]
-      ],
-      points: [
-        LatLng(31.5, 25.0 ) ,
-        LatLng(31.5,28 ) ,
-        LatLng(31.2,30.0 ) ,
-        LatLng(31.0,32.0 ) ,
-        LatLng(31.0,34 ) ,
+    Polygon polygon = const Polygon(polygonId: PolygonId('1'), holes: [
+      [
+        LatLng(32.9027, 31.4329),
+        LatLng(28.7532, 26.9504),
+        LatLng(29.6738, 34.2454),
       ]
-    );    
+    ], points: [
+      LatLng(31.5, 25.0),
+      LatLng(31.5, 28),
+      LatLng(31.2, 30.0),
+      LatLng(31.0, 32.0),
+      LatLng(31.0, 34),
+    ]);
   }
-  
+
   void initCircle() {
     Circle kosharyAbu = const Circle(
-      radius: 10000,
-      circleId: CircleId("1") ,
-      center: LatLng(30.018987399497977, 31.424207246099208)
-        );
+        radius: 10000,
+        circleId: CircleId("1"),
+        center: LatLng(30.018987399497977, 31.424207246099208));
+  }
+
+  Future<void> checkAndRequestLocationServices() async {
+    var isServiceEnable = await location.serviceEnabled();
+    if (!isServiceEnable) {
+      isServiceEnable = await location.requestService();
+
+      if (!isServiceEnable) {
+        // TODO : show error bar
+      }
+    }
+  }
+
+  Future<bool> checkAndRequestLocationPermission() async {
+    var permissionStatus = await location.hasPermission();
+    if (permissionStatus == PermissionStatus.denied) {
+      permissionStatus = await location.requestPermission();
+
+      if (permissionStatus != PermissionStatus.granted) {
+        // TODO: show error bar
+        return false;
+      }
+    }
+    if (permissionStatus == PermissionStatus.deniedForever){
+      return false ;
+    }
+    return true;
+  }
+
+  void getLocationData() {
+    location.onLocationChanged.listen((locationData) {
+      var cameraPosition = CameraPosition(target: LatLng(locationData.latitude!, locationData.longitude!));
+      googleMapController?.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    });
+  }
+
+  void updateMyLocation() async {
+    await checkAndRequestLocationServices();
+    var hasPermission = await checkAndRequestLocationPermission();
+    if (hasPermission) {
+      getLocationData();
+    } else {}
   }
 }
