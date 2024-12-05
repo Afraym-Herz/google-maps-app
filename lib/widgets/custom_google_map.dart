@@ -83,6 +83,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
     return Stack(
       children: [
         GoogleMap(
+          markers: markers,
           zoomControlsEnabled: false,
           onMapCreated: (controller) {
             googleMapController = controller;
@@ -184,16 +185,24 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
         return false;
       }
     }
-    if (permissionStatus == PermissionStatus.deniedForever){
-      return false ;
+    if (permissionStatus == PermissionStatus.deniedForever) {
+      return false;
     }
     return true;
   }
 
   void getLocationData() {
     location.onLocationChanged.listen((locationData) {
-      var cameraPosition = CameraPosition(target: LatLng(locationData.latitude!, locationData.longitude!));
-      googleMapController?.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+      var cameraPosition = CameraPosition(
+          target: LatLng(locationData.latitude!, locationData.longitude!),
+          zoom: 15);
+      Marker myMarker = Marker(
+          markerId: const MarkerId("my_marker"),
+          position: LatLng(locationData.latitude!, locationData.longitude!));
+      markers.add(myMarker);
+      setState(() {});
+      googleMapController
+          ?.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
     });
   }
 
