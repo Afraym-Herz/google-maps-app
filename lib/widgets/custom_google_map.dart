@@ -136,6 +136,23 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   }
   
   void initPolygon() {
-    
+    Polygon polygon = const Polygon(
+      polygonId: PolygonId('1'),
+      holes: [
+        [
+          LatLng(32.9027,31.4329 ) ,
+          LatLng(28.7532,26.9504 ) ,
+          LatLng(29.6738,34.2454 ) ,
+          
+        ]
+      ],
+      points: [
+        LatLng(31.5, 25.0 ) ,
+        LatLng(31.5,28 ) ,
+        LatLng(31.2,30.0 ) ,
+        LatLng(31.0,32.0 ) ,
+        LatLng(31.0,34 ) ,
+      ]
+    );    
   }
 }
