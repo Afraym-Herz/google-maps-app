@@ -23,6 +23,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   Set<Circle> circles = {};
   @override
   void initState() {
+    location = Location();
     initialCameraPosition = const CameraPosition(
       zoom: 12,
       target: LatLng(31.187, 29.928),
@@ -192,6 +193,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   }
 
   void getLocationData() {
+    location.changeSettings(distanceFilter: 2);
     location.onLocationChanged.listen((locationData) {
       var cameraPosition = CameraPosition(
           target: LatLng(locationData.latitude!, locationData.longitude!),
@@ -213,4 +215,6 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
       getLocationData();
     } else {}
   }
+   
 }
+
