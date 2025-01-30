@@ -95,6 +95,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
             LatLngBounds(
               southwest: const LatLng(31.080, 29.7634),
               northeast: const LatLng(31.308, 30.169),
+
             ),
           ),
         ),
